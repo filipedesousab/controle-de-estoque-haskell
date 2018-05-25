@@ -1,6 +1,9 @@
 module Main where
 
-import Lib
+import Menus
 
 main :: IO ()
-main = someFunc
+main = do { mainMenu;
+            op <- getChar;
+            putStrLn ("op: " ++ show(op));
+          }
