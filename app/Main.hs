@@ -1,9 +1,17 @@
 module Main where
 
+import System.IO (stdout, hSetBuffering, BufferMode(NoBuffering))
 import Menus
+import Product
 
 main :: IO ()
-main = do { mainMenu;
+main = do {
+            mainMenu;
             op <- getChar;
-            putStrLn ("op: " ++ show(op));
+            case op of
+              '3' -> do {
+                          newProduct;
+                          main;
+                        }
+              _ -> do main
           }
