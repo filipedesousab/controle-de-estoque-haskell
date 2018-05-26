@@ -4,9 +4,12 @@ module Product
     ) where
 
 import System.IO (stdout, hSetBuffering, BufferMode(NoBuffering))
+import CustomColors
 
-borderLayout = "******************************"
-msgLayout msg = borderLayout ++ "\n" ++ msg ++ "\n" ++ borderLayout
+borderLayout = "\n******************************\n"
+msgLayout msg = colorText "cyan" "" (borderLayout ++ msg ++ borderLayout)
+msgDanger msg = colorText "red" "" (borderLayout ++ msg ++ borderLayout)
+msgSuccess msg = colorText "green" "" (borderLayout ++ msg ++ borderLayout)
 
 -- Message displayed using @q
 msgComeBack = do {
@@ -25,8 +28,7 @@ getValue = do { value <- getLine;
 getConfirm func = do { confirm <- getValue;
                   if confirm /= "S" && confirm /= "s"
                     then do {
-                      putStrLn borderLayout;
-                      putStrLn "Ação não confirmada!";
+                      putStr $ msgDanger "Ação não confirmada!";
                       func;
                     }
                     else putStr ""
@@ -34,7 +36,7 @@ getConfirm func = do { confirm <- getValue;
 
 newProduct :: IO ()
 newProduct = do { hSetBuffering stdout NoBuffering;
-                  putStrLn $ msgLayout "Adicionar um novo produto";
+                  putStr $ msgLayout "Adicionar um novo produto";
                   putStr "Descrição do produto: ";
                   description <- getValue;
                   putStr "Código do produto: ";
@@ -43,7 +45,7 @@ newProduct = do { hSetBuffering stdout NoBuffering;
                   price <- getValue;
                   putStr "Imposto do produto: ";
                   tax <- getValue;
-                  putStrLn borderLayout;
+                  putStr borderLayout;
                   putStrLn "Confirmar entrada do produto? [S/n]";
                   putStrLn (
                             "Produto: " ++ description ++
@@ -73,7 +75,7 @@ printProduct (x:xs) i = do {
 
 -- Get product list view
 listProducts = do {
-  putStrLn $ msgLayout "Listar produtos\nDigite \":q\" para voltar";
+  putStr $ msgLayout "Listar produtos\nDigite \":q\" para voltar";
   printProduct products 1;
 }
 
@@ -88,11 +90,15 @@ getQuantityAddProduct x = do {
   if quantity == ":q"
     then msgComeBack
     else if quantity == ":l"
-      then listProducts
+      then do {
+        listProducts;
+        addProduct;
+      }
       else do {
-        putStr "Confirmar entrada do produto no estoque? [s/n]";
+        putStr $ "Confirmar entrada do produto no estoque? " ++ textRed ("[s/n] ");
         getConfirm addProduct;
         putStrLn(show(x ++ [quantity]));
+        putStr $ msgSuccess "Produto adicionado com sucesso"
       }
 }
 
@@ -107,7 +113,10 @@ getCodeAddProduct = do {
   if code == ":q"
     then msgComeBack
     else if code == ":l"
-      then listProducts
+      then do {
+        listProducts;
+        addProduct;
+      }
       else getQuantityAddProduct [code]
 }
 
