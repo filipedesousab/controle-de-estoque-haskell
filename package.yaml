@@ -21,7 +21,12 @@ description:         Please see the README on GitHub at <https://github.com/gith
 
 dependencies:
 - base >= 4.7 && < 5
-- process
+- process # Call process in system
+- bytestring >= 0.10.8.2 # Working with Bytestring
+- utf8-string >= 0.3.6 # Working with Word8
+- HDBC # Working with Database
+- HDBC-mysql >= 0.7.1.0 # Working with MySQL
+- MissingH >= 1.4.0.1 # Data.String.Utils and others
 
 library:
   source-dirs: src
