@@ -25,10 +25,15 @@ getQuantityAddProduct x = do {
       }
       else do {
         putStr $ "Confirmar entrada do produto? " ++ textRed ("[s/n] ");
-        getConfirm addProduct;
-        putStrLn(show(x ++ [quantity]));
-        putStr $ msgSuccess "Entrada realizada com sucesso!";
-        putStrLn $ "Deseja realizar mais entrada? " ++ textRed ("[s/n] ");
+        confirm <- getConfirm;
+        if confirm
+          then do {
+            putStrLn(show(x ++ [quantity]));
+            putStr $ msgSuccess "Entrada realizada com sucesso!";
+            putStr $ "Deseja realizar mais entrada? " ++ textRed ("[s/n] ");
+            getConfirmYes addProduct;
+          }
+          else addProduct;
       }
 }
 

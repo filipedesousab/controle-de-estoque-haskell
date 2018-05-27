@@ -16,7 +16,7 @@ confirmNewProduct theNewProduct = do {
             "\nImposto: " ++ theNewProduct!!3 ++ "%"
             );
   putStr $ "Confirmar cadastro do produto? " ++ textRed ("[s/n] ");
-  getConfirm newProduct;
+  getConfirmNo newProduct;
   putStr $ msgSuccess "Cadastro realizado com sucesso!";
   putStrLn $ "Deseja realizar mais cadastro? " ++ textRed ("[s/n] ");
 }

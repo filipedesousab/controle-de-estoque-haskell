@@ -1,4 +1,4 @@
-module Input (getValue, getConfirm) where
+module Input (getValue, getConfirm, getConfirmNo, getConfirmYes) where
 
 import Layout
 
@@ -10,11 +10,22 @@ getValue = do { value <- getLine;
                   else return value
               }
 
-getConfirm func = do { confirm <- getValue;
+getConfirm :: IO Bool
+getConfirm = do { confirm <- getValue;
+                  return (confirm == "S" || confirm == "s");
+                }
+
+getConfirmNo func = do { confirm <- getValue;
                         if confirm /= "S" && confirm /= "s"
                           then do {
                             putStr $ msgDanger "Ação não confirmada!";
                             func;
                           }
+                          else putStr ""
+                      }
+
+getConfirmYes func = do { confirm <- getValue;
+                        if confirm == "S" || confirm == "s"
+                          then func
                           else putStr ""
                       }
