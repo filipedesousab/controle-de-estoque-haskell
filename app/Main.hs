@@ -10,11 +10,11 @@ main = do {
             mainMenu;
             op <- getChar;
             case op of
-              '2' -> do {
+              '1' -> do {
                           addProduct;
                           main;
                         }
-              '3' -> do {
+              '4' -> do {
                           newProduct;
                           main;
                         }

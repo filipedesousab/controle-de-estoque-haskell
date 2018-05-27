@@ -14,7 +14,7 @@ Call putStrLn
 Pass value in an array
 -}
 getQuantityAddProduct x = do {
-  putStr "Quantidade para adicionar ao estoque: ";
+  putStr "Digite a quantidade: ";
   quantity <- getValue;
   if quantity == ":q"
     then msgComeBack
@@ -24,10 +24,11 @@ getQuantityAddProduct x = do {
         addProduct;
       }
       else do {
-        putStr $ "Confirmar entrada do produto no estoque? " ++ textRed ("[s/n] ");
+        putStr $ "Confirmar entrada do produto? " ++ textRed ("[s/n] ");
         getConfirm addProduct;
         putStrLn(show(x ++ [quantity]));
-        putStr $ msgSuccess "Produto adicionado com sucesso"
+        putStr $ msgSuccess "Entrada realizada com sucesso!";
+        putStrLn $ "Deseja realizar mais entrada? " ++ textRed ("[s/n] ");
       }
 }
 
@@ -37,7 +38,7 @@ Call getQuantityAddProduct
 Pass value in an array
 -}
 getCodeAddProduct = do {
-  putStr "Insira o código do produto: ";
+  putStr "Digite o código do produto: ";
   code <- getValue;
   if code == ":q"
     then msgComeBack
@@ -52,6 +53,6 @@ getCodeAddProduct = do {
 addProduct :: IO ()
 addProduct = do {
   hSetBuffering stdout NoBuffering;
-  putStrLn $ msgPrimary "Adicionar produtos ao estoque\nA qualquer momento digite:\n\":q\" para voltar ao menu principal\n\":l\" para listar os produtos";
+  putStrLn $ msgPrimary "Entrada de produtos\nA qualquer momento digite:\n\":q\" para voltar ao menu principal\n\":l\" para listar os produtos";
   getCodeAddProduct;
 }

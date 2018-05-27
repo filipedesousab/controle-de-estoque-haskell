@@ -11,8 +11,10 @@ mainMenu :: IO ()
 mainMenu = do
           putStrLn msgMenu
           putStrLn "Digite:"
-          putStrLn "1- Vender um produto"
-          putStrLn "2- Adicionar produtos ao estoque"
-          putStrLn "3- Adicionar um novo produto"
+          putStrLn "1- Entrada de produtos"
+          putStrLn "2- Saída de produtos"
+          putStrLn "3- Estoque"
+          putStrLn "4- Cadastro de produtos"
+          putStrLn ":q- Sair"
           putStrLn borderMenu
 

@@ -15,9 +15,10 @@ confirmNewProduct theNewProduct = do {
             "\nPreço: " ++ theNewProduct!!2 ++
             "\nImposto: " ++ theNewProduct!!3 ++ "%"
             );
-  putStr $ "Confirmar entrada do produto? " ++ textRed ("[s/n] ");
+  putStr $ "Confirmar cadastro do produto? " ++ textRed ("[s/n] ");
   getConfirm newProduct;
-  putStr $ msgSuccess "Novo produto adicionado com sucesso"
+  putStr $ msgSuccess "Cadastro realizado com sucesso!";
+  putStrLn $ "Deseja realizar mais cadastro? " ++ textRed ("[s/n] ");
 }
 
 {-
@@ -26,7 +27,7 @@ Call getQuantityAddProduct
 Pass value in an array
 -}
 getTaxNewProduct x = do {
-  putStr "Imposto do produto: ";
+  putStr "Digite o imposto do produto: ";
   tax <- getValue;
   if tax == ":q"
     then msgComeBack
@@ -44,7 +45,7 @@ Call getQuantityAddProduct
 Pass value in an array
 -}
 getPriceNewProduct x = do {
-  putStr "Preço do produto: ";
+  putStr "Digite o preço do produto: ";
   price <- getValue;
   if price == ":q"
     then msgComeBack
@@ -57,30 +58,12 @@ getPriceNewProduct x = do {
 }
 
 {-
-Get product code
+Get product description
 Call getPriceNewProduct
 Pass value in an array
 -}
-getCodeNewProduct x = do {
-  putStr "Código do produto: ";
-  code <- getValue;
-  if code == ":q"
-    then msgComeBack
-    else if code == ":l"
-      then do {
-        listProducts;
-        newProduct;
-      }
-      else getPriceNewProduct (x ++ [code])
-}
-
-{-
-Get product description
-Call getCodeNewProduct
-Pass value in an array
--}
-getDescriptionNewProduct = do {
-  putStr "Descrição do produto: ";
+getDescriptionNewProduct x = do {
+  putStr "Digite a descrição do produto: ";
   description <- getValue;
   if description == ":q"
     then msgComeBack
@@ -89,11 +72,30 @@ getDescriptionNewProduct = do {
         listProducts;
         newProduct;
       }
-      else getCodeNewProduct [description]
+      else getPriceNewProduct (x ++ [description])
 }
 
+{-
+Get product code
+Call getDescriptionNewProduct
+Pass value in an array
+-}
+getCodeNewProduct = do {
+  putStr "Digite o código do produto: ";
+  code <- getValue;
+  if code == ":q"
+    then msgComeBack
+    else if code == ":l"
+      then do {
+        listProducts;
+        newProduct;
+      }
+      else getDescriptionNewProduct [code]
+}
+
+-- Function to add new product
 newProduct :: IO ()
 newProduct = do { hSetBuffering stdout NoBuffering;
-                  putStr $ msgPrimary "Adicionar um novo produto\nA qualquer momento digite:\n\":q\" para voltar ao menu principal\n\":l\" para listar os produtos";
-                  getDescriptionNewProduct;
+                  putStr $ msgPrimary "Cadastro de produtos\nA qualquer momento digite:\n\":q\" para voltar ao menu principal\n\":l\" para listar os produtos";
+                  getCodeNewProduct;
                 }
