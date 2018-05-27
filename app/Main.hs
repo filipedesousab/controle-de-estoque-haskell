@@ -2,7 +2,8 @@ module Main where
 
 import System.IO (stdout, hSetBuffering, BufferMode(NoBuffering))
 import Menus
-import Product
+import Product.AddProduct
+import Product.NewProduct
 
 main :: IO ()
 main = do {
