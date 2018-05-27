@@ -5,6 +5,7 @@ import System.Exit
 import Menus
 import Product.AddProduct
 import Product.NewProduct
+import Product.ListProducts
 
 main :: IO ()
 main = do {
@@ -13,6 +14,10 @@ main = do {
             case op of
               "1" -> do {
                           addProduct;
+                          main;
+                        }
+              "3" -> do {
+                          listProducts;
                           main;
                         }
               "4" -> do {
