@@ -1,4 +1,4 @@
-module Input (getValue, getConfirm, getConfirmNo, getConfirmYes) where
+module Input (getValue, getConfirm, getConfirmNo, getConfirmYes, getConfirmYesNo) where
 
 import Layout
 
@@ -29,3 +29,9 @@ getConfirmYes func = do { confirm <- getValue;
                           then func
                           else putStr ""
                       }
+
+getConfirmYesNo func1 func2 = do { confirm <- getValue;
+                                  if confirm == "S" || confirm == "s"
+                                    then func1
+                                    else func2
+                                }
