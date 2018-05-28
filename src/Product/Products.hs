@@ -2,6 +2,7 @@
 module Product.Products (
     Product,
     getProducts,
+    setNewProduct,
     codeProduct,
     descriptionProduct,
     priceProduct,
@@ -44,8 +45,41 @@ mapResults :: [SqlValue] -> Product
 mapResults x = ((fromSqlToInt (x!!0)), (fromSqlToString (x!!1)), (fromSqlToDouble (x!!2)), (fromSqlToDouble (x!!3)))
 
 -- Get list of products from the database
+getProducts :: IO [Product]
 getProducts = do {
   conn <- connectDatabase;
   rows <- quickQuery' conn "SELECT * from produtos" [];
+  disconnect conn;
   return $ map mapResults rows;
+}
+
+-- Get single product by code
+getProductByCode :: Int -> IO [SqlValue]
+getProductByCode code = do {
+  conn <- connectDatabase;
+  select <- prepare conn "SELECT * FROM produtos WHERE codigo = ? LIMIT 1;";
+  execute select [toSql (code::Int)];
+  result <- fetchAllRows select;
+  if (length result) > 0
+    then do
+      disconnect conn
+      return (result!!0)
+    else do
+      disconnect conn
+      return []
+}
+
+-- Insert product into database
+setNewProduct :: Product -> IO String
+setNewProduct item = do {
+  thereAProduct <- getProductByCode (codeProduct item);
+  if (length thereAProduct) > 0
+    then return "existingProduct"
+    else do
+      conn <- connectDatabase
+      state <- prepare conn "INSERT INTO produtos VALUES (?,?,?,?);"
+      result <- execute state [toSql ((codeProduct item)::Int), toSql ((descriptionProduct item)::String), toSql ((priceProduct item)::Double), toSql ((taxProduct item)::Double)]
+      commit conn
+      disconnect conn
+      return ""
 }

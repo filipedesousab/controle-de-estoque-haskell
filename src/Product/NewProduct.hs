@@ -6,21 +6,19 @@ import CustomColors
 import Layout
 import Input
 import Product.ListProducts
+import Product.Products
 
+-- Function to confirm product registration
 confirmNewProduct theNewProduct = do {
-  putStr borderLayout;
-  putStrLn (
-            "Produto: " ++ theNewProduct!!0 ++
-            "\nCódigo: " ++ theNewProduct!!1 ++
-            "\nPreço: " ++ theNewProduct!!2 ++
-            "\nImposto: " ++ theNewProduct!!3 ++ "%"
-            );
   putStr $ "Confirmar cadastro do produto? " ++ textRed ("[s/n] ");
   confirm <- getConfirm;
         if confirm
           then do {
-            putStr $ msgSuccess "Cadastro realizado com sucesso!";
-            putStrLn $ "Deseja realizar mais algum cadastro? " ++ textRed ("[s/n] ");
+            result <- setNewProduct (read (theNewProduct!!0)::Int, theNewProduct!!1, read (theNewProduct!!2)::Double, read (theNewProduct!!3)::Double);
+            if result == "existingProduct"
+              then putStr $ msgWarning "Produto já cadastrado!";
+              else putStr $ msgSuccess "Cadastro realizado com sucesso!";
+            putStrLn $ "Deseja realizar outro cadastro? " ++ textRed ("[s/n] ");
             getConfirmYes newProduct;
           }
           else newProduct;
