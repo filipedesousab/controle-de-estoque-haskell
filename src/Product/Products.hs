@@ -1,8 +1,10 @@
 
 module Product.Products (
     Product,
+    ProductUpdate,
     getProducts,
     setNewProduct,
+    setInputProduct,
     codeProduct,
     descriptionProduct,
     priceProduct,
@@ -15,6 +17,7 @@ import Database.Conn
 import Database.Values
 
 type Product = (Int, String, Double, Double)
+type ProductUpdate = (Int, Int)
 
 codeProduct :: Product -> Int
 codeProduct (c, _, _, _) = c
@@ -27,6 +30,12 @@ priceProduct (_, _, p, _) = p
 
 taxProduct :: Product -> Double
 taxProduct (_, _, _, t) = t
+
+codeUpdadeProduct :: ProductUpdate -> Int
+codeUpdadeProduct (c, _) = c
+
+quantityUpdadeProduct :: ProductUpdate -> Int
+quantityUpdadeProduct (_, q) = q
 
 {-getProducts :: [Product]
 getProducts = [
@@ -79,6 +88,21 @@ setNewProduct item = do {
       conn <- connectDatabase
       state <- prepare conn "INSERT INTO produtos VALUES (?,?,?,?);"
       result <- execute state [toSql ((codeProduct item)::Int), toSql ((descriptionProduct item)::String), toSql ((priceProduct item)::Double), toSql ((taxProduct item)::Double)]
+      commit conn
+      disconnect conn
+      return ""
+}
+
+-- Insert input product into database
+setInputProduct :: ProductUpdate -> IO String
+setInputProduct item = do {
+  thereAProduct <- getProductByCode (codeUpdadeProduct item);
+  if (length thereAProduct) <= 0
+    then return "notExistingProduct"
+    else do
+      conn <- connectDatabase
+      state <- prepare conn "UPDATE produtos SET quantidade = quantidade+? WHERE codigo = ?;"
+      result <- execute state [toSql ((quantityUpdadeProduct item)::Int), toSql ((codeUpdadeProduct item)::Int)]
       commit conn
       disconnect conn
       return ""
