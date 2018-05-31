@@ -4,14 +4,15 @@ import Layout
 import Product.Products
 
 -- Display product list
-printProduct :: [Product] -> Int -> IO ()
+printProduct :: [CompleteProduct] -> Int -> IO ()
 printProduct [] _ = putStr ""
 
 printProduct (item:items) i = do {
-  putStrLn $ "Nome: " ++ (descriptionProduct item);
-  putStrLn $ "Código: " ++ show(codeProduct item);
-  putStrLn $ "Preço: R$" ++ show(priceProduct item);
-  putStrLn $ "Imposto: " ++ show(taxProduct item) ++ "%";
+  putStrLn $ "Descrição: " ++ (descriptionCompleteProduct item);
+  putStrLn $ "Código: " ++ show(codeCompleteProduct item);
+  putStrLn $ "Preço: R$ " ++ show(priceCompleteProduct item);
+  putStrLn $ "Imposto: " ++ show(taxCompleteProduct item) ++ "%";
+  putStrLn $ "Quantidade: " ++ show(quantiryCompleteProduct item);
   putStrLn "------------------------------";
   if mod i 5 == 0
     then do {

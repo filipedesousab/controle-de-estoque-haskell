@@ -1,15 +1,17 @@
 
 module Product.Products (
     Product,
-    ProductUpdate,
+    UpdateProduct,
+    CompleteProduct,
     getProducts,
     setNewProduct,
     setInputProduct,
     setOutputProduct,
-    codeProduct,
-    descriptionProduct,
-    priceProduct,
-    taxProduct
+    codeCompleteProduct,
+    descriptionCompleteProduct,
+    priceCompleteProduct,
+    taxCompleteProduct,
+    quantiryCompleteProduct
   ) where
 
 import Database.HDBC
@@ -17,41 +19,43 @@ import Database.HDBC
 import Database.Conn
 import Database.Values
 
-type ProductFull = (Int, String, Double, Double, Int)
+data Product2 = Int String Double Double
+type CompleteProduct = (Int, String, Double, Double, Int)
 type Product = (Int, String, Double, Double)
-type ProductUpdate = (Int, Int)
+type NewProduct = (Int, String, Double, Double)
+type UpdateProduct = (Int, Int)
 
-codeProductFull :: ProductFull -> Int
-codeProductFull (c, _, _, _, _) = c
+codeCompleteProduct :: CompleteProduct -> Int
+codeCompleteProduct (c, _, _, _, _) = c
 
-descriptionProductFull :: ProductFull -> String
-descriptionProductFull (_, d, _, _, _) = d
+descriptionCompleteProduct :: CompleteProduct -> String
+descriptionCompleteProduct (_, d, _, _, _) = d
 
-priceProductFull :: ProductFull -> Double
-priceProductFull (_, _, p, _, _) = p
+priceCompleteProduct :: CompleteProduct -> Double
+priceCompleteProduct (_, _, p, _, _) = p
 
-taxProductFull :: ProductFull -> Double
-taxProductFull (_, _, _, t, _) = t
+taxCompleteProduct :: CompleteProduct -> Double
+taxCompleteProduct (_, _, _, t, _) = t
 
-quantiryProductFull :: ProductFull -> Int
-quantiryProductFull (_, _, _, _, q) = q
+quantiryCompleteProduct :: CompleteProduct -> Int
+quantiryCompleteProduct (_, _, _, _, q) = q
 
-codeProduct :: Product -> Int
-codeProduct (c, _, _, _) = c
+codeNewProduct :: NewProduct -> Int
+codeNewProduct (c, _, _, _) = c
 
-descriptionProduct :: Product -> String
-descriptionProduct (_, d, _, _) = d
+descriptionNewProduct :: NewProduct -> String
+descriptionNewProduct (_, d, _, _) = d
 
-priceProduct :: Product -> Double
-priceProduct (_, _, p, _) = p
+priceNewProduct :: NewProduct -> Double
+priceNewProduct (_, _, p, _) = p
 
-taxProduct :: Product -> Double
-taxProduct (_, _, _, t) = t
+taxNewProduct :: NewProduct -> Double
+taxNewProduct (_, _, _, t) = t
 
-codeUpdadeProduct :: ProductUpdate -> Int
+codeUpdadeProduct :: UpdateProduct -> Int
 codeUpdadeProduct (c, _) = c
 
-quantityUpdadeProduct :: ProductUpdate -> Int
+quantityUpdadeProduct :: UpdateProduct -> Int
 quantityUpdadeProduct (_, q) = q
 
 {-getProducts :: [Product]
@@ -66,12 +70,12 @@ getProducts = [
     (0008, "Produto8", 66.00, 18.00)
   ]-}
 
--- Map SqlValue to Product tuple
-mapResults :: [SqlValue] -> Product
-mapResults x = ((fromSqlToInt (x!!0)), (fromSqlToString (x!!1)), (fromSqlToDouble (x!!2)), (fromSqlToDouble (x!!3)))
+-- Map SqlValue to CompleteProduct tuple
+mapResults :: [SqlValue] -> CompleteProduct
+mapResults x = ((fromSqlToInt (x!!0)), (fromSqlToString (x!!1)), (fromSqlToDouble (x!!2)), (fromSqlToDouble (x!!3)), (fromSqlToInt (x!!4)))
 
 -- Get list of products from the database
-getProducts :: IO [Product]
+getProducts :: IO [CompleteProduct]
 getProducts = do {
   conn <- connectDatabase;
   rows <- quickQuery' conn "SELECT * from produtos" [];
@@ -96,22 +100,22 @@ getProductByCode code = do {
 }
 
 -- Insert product into database
-setNewProduct :: Product -> IO String
+setNewProduct :: NewProduct -> IO String
 setNewProduct item = do {
-  thereAProduct <- getProductByCode (codeProduct item);
+  thereAProduct <- getProductByCode (codeNewProduct item);
   if (length thereAProduct) > 0
     then return "existingProduct"
     else do
       conn <- connectDatabase
       state <- prepare conn "INSERT INTO produtos VALUES (?,?,?,?);"
-      result <- execute state [toSql ((codeProduct item)::Int), toSql ((descriptionProduct item)::String), toSql ((priceProduct item)::Double), toSql ((taxProduct item)::Double)]
+      result <- execute state [toSql ((codeNewProduct item)::Int), toSql ((descriptionNewProduct item)::String), toSql ((priceNewProduct item)::Double), toSql ((taxNewProduct item)::Double)]
       commit conn
       disconnect conn
       return ""
 }
 
 -- Insert input product into database
-setInputProduct :: ProductUpdate -> IO String
+setInputProduct :: UpdateProduct -> IO String
 setInputProduct item = do {
   thereAProduct <- getProductByCode (codeUpdadeProduct item);
   if (length thereAProduct) <= 0
@@ -126,7 +130,7 @@ setInputProduct item = do {
 }
 
 -- Update output of products in the database
-updateOutputProduct :: ProductUpdate -> IO String
+updateOutputProduct :: UpdateProduct -> IO String
 updateOutputProduct item = do {
   thereAProduct <- getProductByCode (codeUpdadeProduct item);
   if (length thereAProduct) <= 0
@@ -143,7 +147,7 @@ updateOutputProduct item = do {
 }
 
 -- Call to request products
-setOutputProduct :: [ProductUpdate] -> IO String
+setOutputProduct :: [UpdateProduct] -> IO String
 setOutputProduct [] = return "completed"
 setOutputProduct (item:items) = do {
   state <- updateOutputProduct item;
