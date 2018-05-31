@@ -1,49 +1,49 @@
-module CustomColors
-    ( colorDefault,
-      colorBlack,
-      colorRed,
-      colorGreen,
-      colorYellow,
-      colorBlue,
-      colorMagenta,
-      colorCyan,
-      colorGrey,
-      colorWhite,
-      colorBgBlack,
-      colorBgRed,
-      colorBgGreen,
-      colorBgYellow,
-      colorBgBlue,
-      colorBgMagenta,
-      colorBgCyan,
-      colorBgGray,
-      colorBgWhite,
-      textBlack,
-      textRed,
-      textGreen,
-      textYellow,
-      textBlue,
-      textMagenta,
-      textCyan,
-      textGrey,
-      bgBlack,
-      bgRed,
-      bgGreen,
-      bgYellow,
-      bgBlue,
-      bgMagenta,
-      bgCyan,
-      bgGrey,
-      colorText
-    ) where
+module CustomColors (
+    colorDefault,
+    colorBlack,
+    colorRed,
+    colorGreen,
+    colorYellow,
+    colorBlue,
+    colorMagenta,
+    colorCyan,
+    colorGrey,
+    colorWhite,
+    colorBgBlack,
+    colorBgRed,
+    colorBgGreen,
+    colorBgYellow,
+    colorBgBlue,
+    colorBgMagenta,
+    colorBgCyan,
+    colorBgGray,
+    colorBgWhite,
+    textBlack,
+    textRed,
+    textGreen,
+    textYellow,
+    textBlue,
+    textMagenta,
+    textCyan,
+    textGrey,
+    bgBlack,
+    bgRed,
+    bgGreen,
+    bgYellow,
+    bgBlue,
+    bgMagenta,
+    bgCyan,
+    bgGrey,
+    colorText,
+  ) where
 
 import Data.Char
 
-textBlack, textRed, textGreen, textYellow, textBlue, textMagenta, textCyan, textGrey :: String -> String
-bgBlack, bgRed, bgGreen, bgYellow, bgBlue, bgMagenta, bgCyan, bgGrey :: String -> String
+-- Color Codes
+colorDefault, colorBlack, colorRed, colorGreen, colorYellow, colorBlue, colorMagenta, colorCyan, colorGrey, colorWhite :: String
+colorBgBlack, colorBgRed, colorBgGreen, colorBgYellow, colorBgBlue, colorBgMagenta, colorBgCyan, colorBgGray, colorBgWhite :: String
 
 colorDefault = "\x1b[0m"
-
 colorBlack = "\x1b[30m"
 colorRed = "\x1b[91m"
 colorGreen = "\x1b[92m"
@@ -64,6 +64,9 @@ colorBgCyan = "\x1b[46m"
 colorBgGray = "\x1b[47m"
 colorBgWhite = "\x1b[97m"
 
+-- Apply color to a String
+textBlack, textRed, textGreen, textYellow, textBlue, textMagenta, textCyan, textGrey :: String -> String
+
 textBlack txt = colorBlack ++ txt ++ colorDefault
 textRed txt = colorRed ++ txt ++ colorDefault
 textGreen txt = colorGreen ++ txt ++ colorDefault
@@ -73,6 +76,9 @@ textMagenta txt = colorMagenta ++ txt ++ colorDefault
 textCyan txt = colorCyan ++ txt ++ colorDefault
 textGrey txt = colorGrey ++ txt ++ colorDefault
 textWhite txt = colorWhite ++ txt ++ colorDefault
+
+-- Apply color to a background of a String
+bgBlack, bgRed, bgGreen, bgYellow, bgBlue, bgMagenta, bgCyan, bgGrey, bgWhite :: String -> String
 
 bgBlack txt = colorBgBlack ++ txt ++ colorDefault
 bgRed txt = colorBgRed ++ txt ++ colorDefault
@@ -84,8 +90,8 @@ bgCyan txt = colorBgCyan ++ txt ++ colorDefault
 bgGrey txt = colorBgGray ++ txt ++ colorDefault
 bgWhite txt = colorBgWhite ++ txt ++ colorDefault
 
-
-
+-- Applies color to background
+setBg :: String -> String -> String
 setBg colorBg txt
   | map toLower colorBg == "brack" = colorBgBlack ++ txt ++ colorDefault
   | map toLower colorBg == "red" = colorBgRed ++ txt ++ colorDefault
@@ -98,6 +104,8 @@ setBg colorBg txt
   | map toLower colorBg == "white" = colorBgWhite ++ txt ++ colorDefault
   | otherwise = txt ++ colorDefault
 
+-- Applies color to text and background
+colorText :: String -> String -> String -> String
 colorText colorTxt colorBg txt
   | map toLower colorTxt == "black" = setBg colorBg (colorBlack ++ txt)
   | map toLower colorTxt == "red" = setBg colorBg (colorRed ++ txt)
