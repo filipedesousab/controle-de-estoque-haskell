@@ -5,6 +5,7 @@ module Product.Products (
     getProducts,
     setNewProduct,
     setInputProduct,
+    setOutputProduct,
     codeProduct,
     descriptionProduct,
     priceProduct,
@@ -16,8 +17,24 @@ import Database.HDBC
 import Database.Conn
 import Database.Values
 
+type ProductFull = (Int, String, Double, Double, Int)
 type Product = (Int, String, Double, Double)
 type ProductUpdate = (Int, Int)
+
+codeProductFull :: ProductFull -> Int
+codeProductFull (c, _, _, _, _) = c
+
+descriptionProductFull :: ProductFull -> String
+descriptionProductFull (_, d, _, _, _) = d
+
+priceProductFull :: ProductFull -> Double
+priceProductFull (_, _, p, _, _) = p
+
+taxProductFull :: ProductFull -> Double
+taxProductFull (_, _, _, t, _) = t
+
+quantiryProductFull :: ProductFull -> Int
+quantiryProductFull (_, _, _, _, q) = q
 
 codeProduct :: Product -> Int
 codeProduct (c, _, _, _) = c
@@ -106,4 +123,31 @@ setInputProduct item = do {
       commit conn
       disconnect conn
       return ""
+}
+
+-- Update output of products in the database
+updateOutputProduct :: ProductUpdate -> IO String
+updateOutputProduct item = do {
+  thereAProduct <- getProductByCode (codeUpdadeProduct item);
+  if (length thereAProduct) <= 0
+    then return "notExistingProduct"
+    else if ((fromSqlToInt (thereAProduct!!4)) - (quantityUpdadeProduct item)) < 0
+      then return "insufficientQuantity"
+      else do
+        conn <- connectDatabase
+        state <- prepare conn "UPDATE produtos SET quantidade = quantidade-? WHERE codigo = ?;"
+        result <- execute state [toSql ((quantityUpdadeProduct item)::Int), toSql ((codeUpdadeProduct item)::Int)]
+        commit conn
+        disconnect conn
+        return "ok"
+}
+
+-- Call to request products
+setOutputProduct :: [ProductUpdate] -> IO String
+setOutputProduct [] = return "completed"
+setOutputProduct (item:items) = do {
+  state <- updateOutputProduct item;
+  if state == "ok"
+    then setOutputProduct items
+    else return state
 }

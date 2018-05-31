@@ -6,6 +6,21 @@ import CustomColors
 import Layout
 import Input
 import Product.ListProducts
+import Product.Products
+
+mapArrayToProducts theOutputProduct = (read(theOutputProduct!!0)::Int, read(theOutputProduct!!1)::Int)
+
+-- Function to confirm the output of the product
+outputProduct theOutputProducts = do {
+    result <- setOutputProduct (map mapArrayToProducts theOutputProducts);
+    if result == "notExistingProduct"
+      then putStr $ msgWarning "Produto não cadastrado!";
+      else if result == "insufficientQuantity"
+        then putStr $ msgWarning "Produto com quantidade insulfisiente!";
+        else putStr $ msgSuccess "Saída realizada com sucesso!";
+    putStr $ "Deseja realizar mais saída? " ++ textRed ("[s/n] ");
+    getConfirmYes (productOutput theOutputProducts);
+}
 
 {-
 Get quantity of products
@@ -32,7 +47,7 @@ getQuantityAddProduct y x = do {
           }
           else do {
             putStr $ "Concluir pedido? " ++ textRed ("[s/n] ");
-            getConfirmYesNo (putStrLn(show(x ++ [y:quantity:[]]))) (productOutput []);
+            getConfirmYesNo (outputProduct (x ++ [y:quantity:[]])) (productOutput []);
           }
       }
 }
