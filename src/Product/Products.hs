@@ -129,9 +129,9 @@ updateOutputProduct :: UpdateProduct -> IO String
 updateOutputProduct item = do
   thereAProduct <- getProductByCode (codeUpdadeProduct item)
   if (length thereAProduct) <= 0
-    then return "notExistingProduct"
+    then return "Produto não cadastrado"
     else if ((fromSqlToInt (thereAProduct!!4)) - (quantityUpdadeProduct item)) < 0
-      then return "insufficientQuantity"
+      then return "Produto com quantidade insulfisiente"
       else do
         conn <- connectDatabase
         state <- prepare conn "UPDATE produtos SET quantidade = quantidade-? WHERE codigo = ?;"
@@ -144,10 +144,10 @@ updateOutputProduct item = do
         return "ok"
 
 -- Call to request products
-setOutputProduct :: [UpdateProduct] -> IO String
-setOutputProduct [] = return "completed"
-setOutputProduct (item:items) = do
+setOutputProduct :: [UpdateProduct] -> [[String]] -> IO [[String]]
+setOutputProduct [] resp = return resp
+setOutputProduct (item:items) resp = do
   state <- updateOutputProduct item
   if state == "ok"
-    then setOutputProduct items
-    else return state
+    then setOutputProduct items resp
+    else setOutputProduct items (resp ++ [[show(codeUpdadeProduct item), state]])

@@ -8,6 +8,14 @@ import Input
 import Product.ListProducts
 import Product.Products
 
+-- Function to display product output failures
+alertDisplay :: [[String]] -> IO ()
+alertDisplay [] = putStr ""
+alertDisplay (x:xs) = do
+  putStrLn $ colorText "yellow" "" ("Produto: " ++ x!!0)
+  putStrLn $ colorText "yellow" "" ("Mensagem: " ++ x!!1)
+  alertDisplay xs
+
 -- Function to map product array to product tuple
 mapArrayToProducts :: [String] -> UpdateProduct
 mapArrayToProducts theOutputProduct = (
@@ -18,19 +26,23 @@ mapArrayToProducts theOutputProduct = (
 -- Function to confirm the output of the product
 outputProduct :: [[String]] -> IO ()
 outputProduct theOutputProducts = do
-    result <- setOutputProduct (map mapArrayToProducts theOutputProducts)
-    if result == "notExistingProduct"
-      then putStr $ msgWarning "Produto não cadastrado!"
-      else if result == "insufficientQuantity"
-        then putStr $ msgWarning "Produto com quantidade insulfisiente!"
-        else putStr $ msgSuccess "Saída realizada com sucesso!"
+    result <- setOutputProduct (map mapArrayToProducts theOutputProducts) []
+    if length result > 0
+      then do
+        putStr $ blink (colorText "yellow" "" "\nAtenção!")
+        putStrLn $ msgWarning "Houve falha ao aplicar ação em algum produto ✔"
+        alertDisplay result
+        if length theOutputProducts > length result
+          then putStr $ msgSuccess "Os demoais produtos obtiveram sucesso!"
+          else putStr $ msgWarning "Houve falha na saída de todos os produtos!"
+      else putStr $ msgSuccess "Saída realizada com sucesso ✔"
     putStr $ "Deseja realizar mais saída? " ++ textRed "[s/n] "
-    getConfirmYes (productOutput theOutputProducts)
+    getConfirmYes (productOutput [])
 
 {-
 Get quantity of products
-Call putStrLn
-Pass value in an array
+Call productOutput or outputProduct
+Pass a list of products
 -}
 getQuantityAddProduct :: String -> [[String]] -> IO ()
 getQuantityAddProduct y x = do
@@ -55,7 +67,7 @@ getQuantityAddProduct y x = do
 {-
 Get product code
 Call getQuantityAddProduct
-Pass value in an array
+Pass value in an array and a list of products
 -}
 getCodeAddProduct :: [[String]] -> IO ()
 getCodeAddProduct x = do
@@ -69,7 +81,11 @@ getCodeAddProduct x = do
         productOutput x
       else getQuantityAddProduct code x
 
--- Function for products output
+{-
+Function for products output
+Call getCodeAddProduct
+Pass a list of products
+-}
 productOutput :: [[String]] -> IO ()
 productOutput x = do
   hSetBuffering stdout NoBuffering
