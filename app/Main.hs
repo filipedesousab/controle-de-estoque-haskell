@@ -8,6 +8,7 @@ import Product.AddProduct
 import Product.NewProduct
 import Product.ListProducts
 import Product.ProductOutput
+import Product.RemoveProduct
 import Product.SearchProductByCode
 
 main :: IO ()
@@ -29,6 +30,9 @@ main = do
             main
     "5" -> do
             newProduct
+            main
+    "7" -> do
+            removeProduct
             main
     ":q" -> die "Até logo!"
     _ -> main

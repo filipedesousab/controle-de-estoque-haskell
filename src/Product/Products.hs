@@ -7,6 +7,7 @@ module Product.Products (
     setNewProduct,
     setInputProduct,
     setOutputProduct,
+    deleteProduct,
     codeCompleteProduct,
     descriptionCompleteProduct,
     priceCompleteProduct,
@@ -144,7 +145,7 @@ updateOutputProduct item = do
         disconnect conn
         return "ok"
 
--- Call to request products
+-- Called to subtract product
 setOutputProduct :: [UpdateProduct] -> [[String]] -> IO [[String]]
 setOutputProduct [] resp = return resp
 setOutputProduct (item:items) resp = do
@@ -152,3 +153,15 @@ setOutputProduct (item:items) resp = do
   if state == "ok"
     then setOutputProduct items resp
     else setOutputProduct items (resp ++ [[show(codeUpdadeProduct item), state]])
+
+-- Call to remove product
+deleteProduct :: Int -> IO Bool
+deleteProduct code = do
+  conn <- connectDatabase
+  state <- prepare conn "DELETE FROM produtos WHERE codigo = ?"
+  result <- execute state [toSql code]
+  commit conn
+  disconnect conn
+  if result == 1
+    then return True
+    else return False

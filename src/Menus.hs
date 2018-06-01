@@ -12,6 +12,8 @@ mainMenu = do
   putStrLn "3- Estoque"
   putStrLn "4- Buscar produto por código"
   putStrLn "5- Cadastro de produtos"
+  putStrLn "6- Alterar dados de produtos"
+  putStrLn "7- Remover produtos"
   putStrLn ":q- Sair"
   putStrLn $ borderLayout ++ colorDefault
 
