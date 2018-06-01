@@ -30,10 +30,10 @@ outputProduct theOutputProducts = do
     if length result > 0
       then do
         putStr $ blink (colorText "yellow" "" "\nAtenção!")
-        putStrLn $ msgWarning "Houve falha ao aplicar ação em algum produto ✔"
+        putStrLn $ msgWarning "Houve falha ao aplicar ação em algum produto!"
         alertDisplay result
         if length theOutputProducts > length result
-          then putStr $ msgSuccess "Os demoais produtos obtiveram sucesso!"
+          then putStr $ msgSuccess "Os demoais produtos obtiveram sucesso ✔"
           else putStr $ msgWarning "Houve falha na saída de todos os produtos!"
       else putStr $ msgSuccess "Saída realizada com sucesso ✔"
     putStr $ "Deseja realizar mais saída? " ++ textRed "[s/n] "

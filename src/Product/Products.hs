@@ -3,6 +3,7 @@ module Product.Products (
     UpdateProduct,
     CompleteProduct,
     getProducts,
+    getProductByCode,
     setNewProduct,
     setInputProduct,
     setOutputProduct,
@@ -74,7 +75,7 @@ getProducts = do
   return $ map mapResults rows
 
 -- Get single product by code
-getProductByCode :: Int -> IO [SqlValue]
+getProductByCode :: Int -> IO [CompleteProduct]
 getProductByCode code = do
   conn <- connectDatabase
   select <- prepare conn "SELECT * FROM produtos WHERE codigo = ? LIMIT 1;"
@@ -83,7 +84,7 @@ getProductByCode code = do
   if (length result) > 0
     then do
       disconnect conn
-      return (result!!0)
+      return $ (mapResults (result!!0)):[]
     else do
       disconnect conn
       return []
@@ -130,7 +131,7 @@ updateOutputProduct item = do
   thereAProduct <- getProductByCode (codeUpdadeProduct item)
   if (length thereAProduct) <= 0
     then return "Produto não cadastrado"
-    else if ((fromSqlToInt (thereAProduct!!4)) - (quantityUpdadeProduct item)) < 0
+    else if ((quantiryCompleteProduct (thereAProduct!!0)) - (quantityUpdadeProduct item)) < 0
       then return "Produto com quantidade insulfisiente"
       else do
         conn <- connectDatabase
