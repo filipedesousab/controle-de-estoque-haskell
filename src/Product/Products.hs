@@ -71,7 +71,7 @@ mapResults x = (
 getProducts :: IO [CompleteProduct]
 getProducts = do
   conn <- connectDatabase
-  rows <- quickQuery' conn "SELECT * from produtos" []
+  rows <- quickQuery' conn "SELECT * from produtos ORDER BY codigo ASC" []
   disconnect conn
   return $ map mapResults rows
 
@@ -98,12 +98,13 @@ setNewProduct item = do
     then return "existingProduct"
     else do
       conn <- connectDatabase
-      state <- prepare conn "INSERT INTO produtos VALUES (?,?,?,?);"
+      state <- prepare conn "INSERT INTO produtos VALUES (?,?,?,?,?);"
       result <- execute state [
           toSql ((codeNewProduct item)::Int),
           toSql ((descriptionNewProduct item)::String),
           toSql ((priceNewProduct item)::Double),
-          toSql ((taxNewProduct item)::Double)
+          toSql ((taxNewProduct item)::Double),
+          toSql (0::Int)
         ]
       commit conn
       disconnect conn
