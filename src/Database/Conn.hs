@@ -6,9 +6,9 @@ import Database.HDBC.MySQL
 -- Function to get a connection to the database
 connectDatabase :: IO Connection
 connectDatabase = connectMySQL defaultMySQLConnectInfo {
-    mysqlHost = "127.0.0.1",
-    mysqlUser     = "root",
-    mysqlPassword = "root",
+    mysqlHost = "sql10.freemysqlhosting.net",
+    mysqlUser     = "sql10240941",
+    mysqlPassword = "lyTzclBLLr",
     mysqlPort = 3306,
-    mysqlDatabase = "testeHaskel"
+    mysqlDatabase = "sql10240941"
   }
