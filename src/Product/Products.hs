@@ -8,6 +8,7 @@ module Product.Products (
     setInputProduct,
     setOutputProduct,
     deleteProduct,
+    updateProduct,
     codeCompleteProduct,
     descriptionCompleteProduct,
     priceCompleteProduct,
@@ -161,6 +162,25 @@ deleteProduct code = do
   conn <- connectDatabase
   state <- prepare conn "DELETE FROM produtos WHERE codigo = ?"
   result <- execute state [toSql code]
+  commit conn
+  disconnect conn
+  if result == 1
+    then return True
+    else return False
+
+-- Update product data in the database
+updateProduct :: CompleteProduct -> IO Bool
+updateProduct item = do
+  conn <- connectDatabase
+  state <- prepare conn "UPDATE produtos SET codigo = ?, descricao = ?, preco = ?, imposto = ?, quantidade = ? WHERE codigo = ?;"
+  result <- execute state [
+      toSql ((codeCompleteProduct item)::Int),
+      toSql ((descriptionCompleteProduct item)::String),
+      toSql ((priceCompleteProduct item)::Double),
+      toSql ((taxCompleteProduct item)::Double),
+      toSql ((quantiryCompleteProduct item)::Int),
+      toSql ((codeCompleteProduct item)::Int)
+    ]
   commit conn
   disconnect conn
   if result == 1

@@ -9,6 +9,7 @@ import Product.NewProduct
 import Product.ListProducts
 import Product.ProductOutput
 import Product.RemoveProduct
+import Product.ChangeProduct
 import Product.SearchProductByCode
 
 main :: IO ()
@@ -30,6 +31,9 @@ main = do
             main
     "5" -> do
             newProduct
+            main
+    "6" -> do
+            changeProduct
             main
     "7" -> do
             removeProduct
