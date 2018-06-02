@@ -159,7 +159,11 @@ getCodeChangeProduct = do
           then changeProduct
           else do
             product <- getProductByCode (read code::Int)
-            getDescriptionChangeProduct (product!!0)
+            if length product > 0
+              then getDescriptionChangeProduct (product!!0)
+              else do
+                putStr $ msgWarning "Produto não cadastrado"
+                changeProduct
 
 -- Function to add new product
 changeProduct :: IO ()
