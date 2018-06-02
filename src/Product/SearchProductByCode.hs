@@ -1,4 +1,4 @@
-module Product.SearchProductByCode ( searchProductByCode, printProduct ) where
+module Product.SearchProductByCode ( searchProductByCode ) where
 
 import System.IO (stdout, hSetBuffering, BufferMode(NoBuffering))
 import Database.HDBC
@@ -9,15 +9,6 @@ import CustomColors
 import Database.Values
 import Product.Products
 import Product.ListProducts
-
--- Display product list
-printProduct :: CompleteProduct -> IO ()
-printProduct item = do
-  putStrLn $ "\nDescrição: " ++ (descriptionCompleteProduct item)
-  putStrLn $ "Código: " ++ show(codeCompleteProduct item)
-  putStrLn $ "Preço: R$ " ++ show(priceCompleteProduct item)
-  putStrLn $ "Imposto: " ++ show(taxCompleteProduct item) ++ "%"
-  putStrLn $ "Quantidade: " ++ show(quantiryCompleteProduct item)
 
 -- Search single product by code
 searchProductByCode :: IO ()
@@ -37,9 +28,9 @@ searchProductByCode = do
         listProducts
         searchProductByCode
       else do
-        product <- getProductByCode (read(code)::Int)
+        product <- getProductByCode (read (code)::Int)
         if length product > 0
           then do
-            printProduct (product!!0)
+            printProduct $ product!!0
             putStr $ msgSuccess "Produto localizado com sucesso ✔"
           else putStr $ msgWarning "Produto não localizado!"

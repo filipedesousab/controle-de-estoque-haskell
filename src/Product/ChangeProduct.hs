@@ -32,7 +32,7 @@ Pass value in an array
 getQuantityChangeProduct :: CompleteProduct -> IO ()
 getQuantityChangeProduct product = do
   putStr "Digite a quantidade em estoque ("
-  putStr $ show (quantiryCompleteProduct product)
+  putStr $ show $ quantityCompleteProduct product
   putStr "): "
   quantity <- getLine
   if quantity == ""
@@ -61,7 +61,7 @@ Pass value in an array
 getTaxChangeProduct :: CompleteProduct -> IO ()
 getTaxChangeProduct product = do
   putStr "Digite o imposto do produto ("
-  putStr $ show (taxCompleteProduct product)
+  putStr $ show $ taxCompleteProduct product
   putStr "%): "
   tax <- getLine
   if tax == ""
@@ -79,7 +79,7 @@ getTaxChangeProduct product = do
                 descriptionCompleteProduct product,
                 priceCompleteProduct product,
                 read tax::Double,
-                quantiryCompleteProduct product
+                quantityCompleteProduct product
               )
 
 {-
@@ -90,7 +90,7 @@ Pass value in an array
 getPriceChangeProduct :: CompleteProduct -> IO ()
 getPriceChangeProduct product = do
   putStr "Digite o preço do produto (R$ "
-  putStr $ show (priceCompleteProduct product)
+  putStr $ show $ priceCompleteProduct product
   putStr "): "
   price <- getLine
   if price == ""
@@ -108,7 +108,7 @@ getPriceChangeProduct product = do
                 descriptionCompleteProduct product,
                 read price::Double,
                 taxCompleteProduct product,
-                quantiryCompleteProduct product
+                quantityCompleteProduct product
               )
 
 {-
@@ -137,7 +137,7 @@ getDescriptionChangeProduct product = do
               description,
               priceCompleteProduct product,
               taxCompleteProduct product,
-              quantiryCompleteProduct product
+              quantityCompleteProduct product
             )
 
 {-

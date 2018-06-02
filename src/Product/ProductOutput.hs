@@ -19,8 +19,8 @@ alertDisplay (x:xs) = do
 -- Function to map product array to product tuple
 mapArrayToProducts :: [String] -> UpdateProduct
 mapArrayToProducts theOutputProduct = (
-    read(theOutputProduct!!0)::Int,
-    read(theOutputProduct!!1)::Int
+    read (theOutputProduct!!0)::Int,
+    read (theOutputProduct!!1)::Int
   )
 
 -- Function to confirm the output of the product
@@ -29,15 +29,15 @@ outputProduct theOutputProducts = do
     result <- setOutputProduct (map mapArrayToProducts theOutputProducts) []
     if length result > 0
       then do
-        putStr $ blink (colorText "yellow" "" "\nAtenção!")
+        putStr $ blink $ colorText "yellow" "" "\nAtenção!"
         putStrLn $ msgWarning "Houve falha ao aplicar ação em algum produto!"
         alertDisplay result
         if length theOutputProducts > length result
-          then putStr $ msgSuccess "Os demoais produtos obtiveram sucesso ✔"
+          then putStr $ msgSuccess "Os demais produtos obtiveram sucesso ✔"
           else putStr $ msgWarning "Houve falha na saída de todos os produtos!"
       else putStr $ msgSuccess "Saída realizada com sucesso ✔"
     putStr $ "Deseja realizar mais saída? " ++ textRed "[s/n] "
-    getConfirmYes (productOutput [])
+    getConfirmYes $ productOutput []
 
 {-
 Get quantity of products
@@ -66,7 +66,7 @@ getQuantityAddProduct y x = do
                   productOutput (x ++ [y:quantity:[]])
                 else do
                   putStr $ "Concluir pedido? " ++ textRed "[s/n] "
-                  getConfirmYesNo (outputProduct (x ++ [y:quantity:[]])) (productOutput [])
+                  getConfirmYesNo (outputProduct (x ++ [y:quantity:[]])) $ productOutput []
 
 {-
 Get product code

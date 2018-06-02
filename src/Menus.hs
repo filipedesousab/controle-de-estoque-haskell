@@ -5,7 +5,7 @@ import CustomColors
 
 mainMenu :: IO ()
 mainMenu = do
-  putStrLn $ msgPrimary "Escolha uma opção"
+  putStrLn $ msgPrimary "Controle de estoque"
   putStrLn $ colorCyan ++ "Digite:"
   putStrLn "1- Entrada de produtos"
   putStrLn "2- Saída de produtos"

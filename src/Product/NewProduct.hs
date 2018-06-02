@@ -8,6 +8,14 @@ import Input
 import Product.ListProducts
 import Product.Products
 
+-- Function to map product array to product tuple
+mapArrayToProducts :: [String] -> NewProduct
+mapArrayToProducts theNewProduct = (
+    read (theNewProduct!!0)::Int,
+    theNewProduct!!1,
+    read (theNewProduct!!2)::Double,
+    read (theNewProduct!!3)::Double
+  )
 -- Function to confirm product registration
 confirmNewProduct :: [String] -> IO ()
 confirmNewProduct theNewProduct = do
@@ -15,7 +23,7 @@ confirmNewProduct theNewProduct = do
   confirm <- getConfirm
   if confirm
     then do
-      result <- setNewProduct (read (theNewProduct!!0)::Int, theNewProduct!!1, read (theNewProduct!!2)::Double, read (theNewProduct!!3)::Double)
+      result <- setNewProduct $ mapArrayToProducts theNewProduct
       if result == "existingProduct"
         then putStr $ msgWarning "Produto já cadastrado!"
         else putStr $ msgSuccess "Cadastro realizado com sucesso ✔"
@@ -40,7 +48,7 @@ getTaxNewProduct x = do
         newProduct
         else if tax == ":c"
           then newProduct
-          else confirmNewProduct (x ++ [tax])
+          else confirmNewProduct $ x ++ [tax]
 
 {-
 Get product price
@@ -59,7 +67,7 @@ getPriceNewProduct x = do
         newProduct
         else if price == ":c"
           then newProduct
-          else getTaxNewProduct (x ++ [price])
+          else getTaxNewProduct $ x ++ [price]
 
 {-
 Get product description
@@ -78,7 +86,7 @@ getDescriptionNewProduct x = do
         newProduct
         else if description == ":c"
           then newProduct
-          else getPriceNewProduct (x ++ [description])
+          else getPriceNewProduct $ x ++ [description]
 
 {-
 Get product code

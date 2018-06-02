@@ -2,6 +2,7 @@
 module Product.Products (
     UpdateProduct,
     CompleteProduct,
+    NewProduct,
     getProducts,
     getProductByCode,
     setNewProduct,
@@ -13,7 +14,7 @@ module Product.Products (
     descriptionCompleteProduct,
     priceCompleteProduct,
     taxCompleteProduct,
-    quantiryCompleteProduct,
+    quantityCompleteProduct,
   ) where
 
 import Database.HDBC
@@ -37,8 +38,8 @@ priceCompleteProduct (_, _, p, _, _) = p
 taxCompleteProduct :: CompleteProduct -> Double
 taxCompleteProduct (_, _, _, t, _) = t
 
-quantiryCompleteProduct :: CompleteProduct -> Int
-quantiryCompleteProduct (_, _, _, _, q) = q
+quantityCompleteProduct :: CompleteProduct -> Int
+quantityCompleteProduct (_, _, _, _, q) = q
 
 codeNewProduct :: NewProduct -> Int
 codeNewProduct (c, _, _, _) = c
@@ -61,11 +62,11 @@ quantityUpdadeProduct (_, q) = q
 -- Map SqlValue to CompleteProduct tuple
 mapResults :: [SqlValue] -> CompleteProduct
 mapResults x = (
-    (fromSqlToInt (x!!0)),
-    (fromSqlToString (x!!1)),
-    (fromSqlToDouble (x!!2)),
-    (fromSqlToDouble (x!!3)),
-    (fromSqlToInt (x!!4))
+    (fromSqlToInt $ x!!0),
+    (fromSqlToString $ x!!1),
+    (fromSqlToDouble $ x!!2),
+    (fromSqlToDouble $ x!!3),
+    (fromSqlToInt $ x!!4)
   )
 
 -- Get list of products from the database
@@ -86,7 +87,7 @@ getProductByCode code = do
   if (length result) > 0
     then do
       disconnect conn
-      return $ (mapResults (result!!0)):[]
+      return $ (mapResults $ result!!0):[]
     else do
       disconnect conn
       return []
@@ -134,7 +135,7 @@ updateOutputProduct item = do
   thereAProduct <- getProductByCode (codeUpdadeProduct item)
   if (length thereAProduct) <= 0
     then return "Produto não cadastrado"
-    else if ((quantiryCompleteProduct (thereAProduct!!0)) - (quantityUpdadeProduct item)) < 0
+    else if ((quantityCompleteProduct $ thereAProduct!!0) - (quantityUpdadeProduct item)) < 0
       then return "Produto com quantidade insulfisiente"
       else do
         conn <- connectDatabase
@@ -154,7 +155,7 @@ setOutputProduct (item:items) resp = do
   state <- updateOutputProduct item
   if state == "ok"
     then setOutputProduct items resp
-    else setOutputProduct items (resp ++ [[show(codeUpdadeProduct item), state]])
+    else setOutputProduct items (resp ++ [[show (codeUpdadeProduct item), state]])
 
 -- Call to remove product
 deleteProduct :: Int -> IO Bool
@@ -178,7 +179,7 @@ updateProduct item = do
       toSql ((descriptionCompleteProduct item)::String),
       toSql ((priceCompleteProduct item)::Double),
       toSql ((taxCompleteProduct item)::Double),
-      toSql ((quantiryCompleteProduct item)::Int),
+      toSql ((quantityCompleteProduct item)::Int),
       toSql ((codeCompleteProduct item)::Int)
     ]
   commit conn

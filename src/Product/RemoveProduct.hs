@@ -7,7 +7,6 @@ import Layout
 import Input
 import Product.Products
 import Product.ListProducts
-import Product.SearchProductByCode
 
 -- Function to confirm product removal
 confirmRemoveProduct :: Int -> IO ()
@@ -16,7 +15,7 @@ confirmRemoveProduct code = do
   if length product > 0
     then do
       putStr $ msgDefault "Detalhes do produto"
-      printProduct (product!!0)
+      printProduct $ product!!0
       putStr $ "\nConfirmar remoção do produto? " ++ textRed "[s/n] "
       confirm <- getConfirm
       if confirm
@@ -47,7 +46,7 @@ getCodeRemoveProduct = do
       then do
         listProducts
         removeProduct
-      else confirmRemoveProduct (read code)
+      else confirmRemoveProduct $ read code
 
 -- Function to remove product
 removeProduct :: IO ()
