@@ -41,7 +41,9 @@ getQuantityAddProduct x = do
       then do
         listProducts
         addProduct
-      else confirmInputProduct (x ++ [quantity])
+        else if quantity == ":c"
+          then addProduct
+          else confirmInputProduct (x ++ [quantity])
 
 {-
 Get product code
@@ -58,7 +60,9 @@ getCodeAddProduct = do
       then do
         listProducts
         addProduct
-      else getQuantityAddProduct [code]
+        else if code == ":c"
+          then addProduct
+          else getQuantityAddProduct [code]
 
 -- Add product entry
 addProduct :: IO ()
@@ -68,5 +72,6 @@ addProduct = do
   putStrLn $ colorCyan ++ "A qualquer momento digite:"
   putStrLn $ "\":q\" para voltar ao menu principal"
   putStrLn $ "\":l\" para listar os produtos"
+  putStrLn $ "\":c\" para iniciar novamente"
   putStr $ borderLayout ++ colorDefault
   getCodeAddProduct

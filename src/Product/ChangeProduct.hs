@@ -43,13 +43,15 @@ getQuantityChangeProduct product = do
         then do
           listProducts
           changeProduct
-        else confirmChangeProduct (
-              codeCompleteProduct product,
-              descriptionCompleteProduct product,
-              priceCompleteProduct product,
-              taxCompleteProduct product,
-              read quantity::Int
-            )
+        else if quantity == ":c"
+          then changeProduct
+          else confirmChangeProduct (
+                codeCompleteProduct product,
+                descriptionCompleteProduct product,
+                priceCompleteProduct product,
+                taxCompleteProduct product,
+                read quantity::Int
+              )
 
 {-
 Get product price
@@ -70,13 +72,15 @@ getTaxChangeProduct product = do
         then do
           listProducts
           changeProduct
-        else getQuantityChangeProduct (
-              codeCompleteProduct product,
-              descriptionCompleteProduct product,
-              priceCompleteProduct product,
-              read tax::Double,
-              quantiryCompleteProduct product
-            )
+        else if tax == ":c"
+          then changeProduct
+          else getQuantityChangeProduct (
+                codeCompleteProduct product,
+                descriptionCompleteProduct product,
+                priceCompleteProduct product,
+                read tax::Double,
+                quantiryCompleteProduct product
+              )
 
 {-
 Get product price
@@ -97,13 +101,15 @@ getPriceChangeProduct product = do
         then do
           listProducts
           changeProduct
-        else getTaxChangeProduct (
-              codeCompleteProduct product,
-              descriptionCompleteProduct product,
-              read price::Double,
-              taxCompleteProduct product,
-              quantiryCompleteProduct product
-            )
+        else if price == ":c"
+          then changeProduct
+          else getTaxChangeProduct (
+                codeCompleteProduct product,
+                descriptionCompleteProduct product,
+                read price::Double,
+                taxCompleteProduct product,
+                quantiryCompleteProduct product
+              )
 
 {-
 Get product description
@@ -124,13 +130,15 @@ getDescriptionChangeProduct product = do
         then do
           listProducts
           changeProduct
-        else getPriceChangeProduct (
-            codeCompleteProduct product,
-            description,
-            priceCompleteProduct product,
-            taxCompleteProduct product,
-            quantiryCompleteProduct product
-          )
+        else if description == ":c"
+          then changeProduct
+          else getPriceChangeProduct (
+              codeCompleteProduct product,
+              description,
+              priceCompleteProduct product,
+              taxCompleteProduct product,
+              quantiryCompleteProduct product
+            )
 
 {-
 Get product code
@@ -147,9 +155,11 @@ getCodeChangeProduct = do
       then do
         listProducts
         changeProduct
-      else do
-        product <- getProductByCode (read code::Int)
-        getDescriptionChangeProduct (product!!0)
+        else if code == ":c"
+          then changeProduct
+          else do
+            product <- getProductByCode (read code::Int)
+            getDescriptionChangeProduct (product!!0)
 
 -- Function to add new product
 changeProduct :: IO ()
@@ -159,5 +169,6 @@ changeProduct = do
   putStrLn $ colorCyan ++ "A qualquer momento digite:"
   putStrLn $ "\":q\" para voltar ao menu principal"
   putStrLn $ "\":l\" para listar os produtos"
+  putStrLn $ "\":c\" para iniciar novamente"
   putStr $ borderLayout ++ colorDefault
   getCodeChangeProduct

@@ -54,15 +54,17 @@ getQuantityAddProduct y x = do
       then do
         listProducts
         productOutput x
-      else do
-        putStr $ "Deseja incluir mais itens? " ++ textRed "[s/n] "
-        confirm <- getConfirm
-        if confirm
-          then do
-            productOutput (x ++ [y:quantity:[]])
+        else if quantity == ":c"
+          then productOutput []
           else do
-            putStr $ "Concluir pedido? " ++ textRed "[s/n] "
-            getConfirmYesNo (outputProduct (x ++ [y:quantity:[]])) (productOutput [])
+            putStr $ "Deseja incluir mais itens? " ++ textRed "[s/n] "
+            confirm <- getConfirm
+            if confirm
+              then do
+                productOutput (x ++ [y:quantity:[]])
+              else do
+                putStr $ "Concluir pedido? " ++ textRed "[s/n] "
+                getConfirmYesNo (outputProduct (x ++ [y:quantity:[]])) (productOutput [])
 
 {-
 Get product code
@@ -79,7 +81,9 @@ getCodeAddProduct x = do
       then do
         listProducts
         productOutput x
-      else getQuantityAddProduct code x
+        else if code == ":c"
+          then productOutput []
+          else getQuantityAddProduct code x
 
 {-
 Function for products output
@@ -93,5 +97,6 @@ productOutput x = do
   putStrLn $ colorCyan ++ "A qualquer momento digite:"
   putStrLn $ "\":q\" para voltar ao menu principal"
   putStrLn $ "\":l\" para listar os produtos"
+  putStrLn $ "\":c\" para iniciar novamente"
   putStr $ borderLayout ++ colorDefault
   getCodeAddProduct x

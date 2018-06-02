@@ -38,7 +38,9 @@ getTaxNewProduct x = do
       then do
         listProducts
         newProduct
-      else confirmNewProduct (x ++ [tax])
+        else if tax == ":c"
+          then newProduct
+          else confirmNewProduct (x ++ [tax])
 
 {-
 Get product price
@@ -55,7 +57,9 @@ getPriceNewProduct x = do
       then do
         listProducts
         newProduct
-      else getTaxNewProduct (x ++ [price])
+        else if price == ":c"
+          then newProduct
+          else getTaxNewProduct (x ++ [price])
 
 {-
 Get product description
@@ -72,7 +76,9 @@ getDescriptionNewProduct x = do
       then do
         listProducts
         newProduct
-      else getPriceNewProduct (x ++ [description])
+        else if description == ":c"
+          then newProduct
+          else getPriceNewProduct (x ++ [description])
 
 {-
 Get product code
@@ -89,7 +95,9 @@ getCodeNewProduct = do
       then do
         listProducts
         newProduct
-      else getDescriptionNewProduct [code]
+        else if code == ":c"
+          then newProduct
+          else getDescriptionNewProduct [code]
 
 -- Function to add new product
 newProduct :: IO ()
@@ -99,5 +107,6 @@ newProduct = do
   putStrLn $ colorCyan ++ "A qualquer momento digite:"
   putStrLn $ "\":q\" para voltar ao menu principal"
   putStrLn $ "\":l\" para listar os produtos"
+  putStrLn $ "\":c\" para iniciar novamente"
   putStr $ borderLayout ++ colorDefault
   getCodeNewProduct
