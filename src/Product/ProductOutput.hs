@@ -1,6 +1,8 @@
 module Product.ProductOutput ( productOutput ) where
 
 import System.IO (stdout, hSetBuffering, BufferMode(NoBuffering))
+import Text.Regex.Posix
+import Control.Exception
 
 import CustomColors
 import Layout
@@ -58,15 +60,19 @@ getQuantityAddProduct y x = do
           then productOutput []
           else if quantity == ":d"
             then productOutput x
-            else do
-              putStr $ "Deseja incluir mais itens? " ++ textRed "[s/n] "
-              confirm <- getConfirm
-              if confirm
-                then do
-                  productOutput (x ++ [y:quantity:[]])
-                else do
-                  putStr $ "Concluir pedido? " ++ textRed "[s/n] "
-                  getConfirmYesNo (outputProduct (x ++ [y:quantity:[]])) $ productOutput []
+            else if ((quantity =~ "^[0-9]+$")::Bool)
+              then do
+                putStr $ "Deseja incluir mais itens? " ++ textRed "[s/n] "
+                confirm <- getConfirm
+                if confirm
+                  then do
+                    productOutput (x ++ [y:quantity:[]])
+                  else do
+                    putStr $ "Concluir pedido? " ++ textRed "[s/n] "
+                    getConfirmYesNo (outputProduct (x ++ [y:quantity:[]])) $ productOutput []
+              else do
+                putStr $ msgDanger "Insira um valor inteiro válido!"
+                getQuantityAddProduct y x
 
 {-
 Get product code
@@ -87,7 +93,11 @@ getCodeAddProduct x = do
           then productOutput []
           else if code == ":d"
             then productOutput x
-            else getQuantityAddProduct code x
+            else if ((code =~ "^[0-9]+$")::Bool)
+              then getQuantityAddProduct code x
+              else do
+                putStr $ msgDanger "Insira um valor inteiro válido!"
+                getCodeAddProduct x
 
 {-
 Function for products output
@@ -104,4 +114,9 @@ productOutput x = do
   putStrLn $ "\":c\" para iniciar novamente"
   putStrLn $ "\":d\" para descartar essa ultima entrada"
   putStr $ borderLayout ++ colorDefault
-  getCodeAddProduct x
+  getCodeAddProduct x `catch` msgException
+
+msgException :: IOError -> IO ()
+msgException _ = do
+  putStr $ msgDanger "Entrada inválida!"
+  productOutput []
