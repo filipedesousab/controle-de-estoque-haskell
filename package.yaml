@@ -27,6 +27,7 @@ dependencies:
 - HDBC # Working with Database
 - HDBC-mysql >= 0.7.1.0 # Working with MySQL
 - MissingH >= 1.4.0.1 # Data.String.Utils and others
+- regex-posix
 
 library:
   source-dirs: src

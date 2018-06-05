@@ -1,6 +1,8 @@
 module Product.AddProduct ( addProduct ) where
 
 import System.IO (stdout, hSetBuffering, BufferMode(NoBuffering))
+import Text.Regex.Posix
+import Control.Exception
 
 import CustomColors
 import Layout
@@ -9,15 +11,15 @@ import Product.ListProducts
 import Product.Products
 
 -- Function to confirm product entry
-confirmInputProduct :: [String] -> IO ()
+confirmInputProduct :: [Int] -> IO ()
 confirmInputProduct theInputProduct = do
   putStr $ "Confirmar entrada do produto? " ++ textRed "[s/n] "
   confirm <- getConfirm
   if confirm
     then do
       result <- setInputProduct (
-          read(theInputProduct!!0)::Int,
-          read(theInputProduct!!1)::Int
+          theInputProduct!!0,
+          theInputProduct!!1
         )
       if result == "notExistingProduct"
         then putStr $ msgWarning "Produto não cadastrado!"
@@ -31,7 +33,7 @@ Get quantity of products
 Call putStrLn
 Pass value in an array
 -}
-getQuantityAddProduct :: [String] -> IO ()
+getQuantityAddProduct :: Int -> IO ()
 getQuantityAddProduct x = do
   putStr "Digite a quantidade: "
   quantity <- getValue
@@ -43,7 +45,11 @@ getQuantityAddProduct x = do
         addProduct
         else if quantity == ":c"
           then addProduct
-          else confirmInputProduct (x ++ [quantity])
+          else if ((quantity =~ "^[0-9]+$")::Bool)
+            then confirmInputProduct ([x, (read quantity)])
+            else do
+              putStr $ msgDanger "Insira um valor inteiro válido!"
+              getQuantityAddProduct x
 
 {-
 Get product code
@@ -62,7 +68,11 @@ getCodeAddProduct = do
         addProduct
         else if code == ":c"
           then addProduct
-          else getQuantityAddProduct [code]
+          else if ((code =~ "^[0-9]+$")::Bool)
+            then getQuantityAddProduct (read code)
+            else do
+              putStr $ msgDanger "Insira um valor inteiro válido!"
+              getCodeAddProduct
 
 -- Add product entry
 addProduct :: IO ()
@@ -74,4 +84,9 @@ addProduct = do
   putStrLn $ "\":l\" para listar os produtos"
   putStrLn $ "\":c\" para iniciar novamente"
   putStr $ borderLayout ++ colorDefault
-  getCodeAddProduct
+  getCodeAddProduct `catch` msgException
+
+msgException :: IOError -> IO ()
+msgException _ = do
+  putStr $ msgDanger "Entrada inválida!"
+  addProduct
