@@ -1,6 +1,8 @@
 module Product.ChangeProduct ( changeProduct ) where
 
 import System.IO (stdout, hSetBuffering, BufferMode(NoBuffering))
+import Text.Regex.Posix
+import Control.Exception
 
 import CustomColors
 import Layout
@@ -45,13 +47,17 @@ getQuantityChangeProduct product = do
           changeProduct
         else if quantity == ":c"
           then changeProduct
-          else confirmChangeProduct (
-                codeCompleteProduct product,
-                descriptionCompleteProduct product,
-                priceCompleteProduct product,
-                taxCompleteProduct product,
-                read quantity::Int
-              )
+          else if ((quantity =~ "^[0-9]+$")::Bool)
+            then confirmChangeProduct (
+                  codeCompleteProduct product,
+                  descriptionCompleteProduct product,
+                  priceCompleteProduct product,
+                  taxCompleteProduct product,
+                  read quantity::Int
+                )
+            else do
+              putStr $ msgDanger "Insira um valor inteiro válido!"
+              getQuantityChangeProduct product
 
 {-
 Get product price
@@ -74,13 +80,17 @@ getTaxChangeProduct product = do
           changeProduct
         else if tax == ":c"
           then changeProduct
-          else getQuantityChangeProduct (
-                codeCompleteProduct product,
-                descriptionCompleteProduct product,
-                priceCompleteProduct product,
-                read tax::Double,
-                quantityCompleteProduct product
-              )
+          else if ((tax =~ "^[0-9]+(.[0-9])*$")::Bool)
+            then getQuantityChangeProduct (
+                  codeCompleteProduct product,
+                  descriptionCompleteProduct product,
+                  priceCompleteProduct product,
+                  read tax::Double,
+                  quantityCompleteProduct product
+                )
+            else do
+              putStr $ msgDanger "Insira um valor válido!"
+              getTaxChangeProduct product
 
 {-
 Get product price
@@ -103,13 +113,17 @@ getPriceChangeProduct product = do
           changeProduct
         else if price == ":c"
           then changeProduct
-          else getTaxChangeProduct (
-                codeCompleteProduct product,
-                descriptionCompleteProduct product,
-                read price::Double,
-                taxCompleteProduct product,
-                quantityCompleteProduct product
-              )
+          else if ((price =~ "^[0-9]+(.[0-9])*$")::Bool)
+            then getTaxChangeProduct (
+                  codeCompleteProduct product,
+                  descriptionCompleteProduct product,
+                  read price::Double,
+                  taxCompleteProduct product,
+                  quantityCompleteProduct product
+                )
+            else do
+              putStr $ msgDanger "Insira um valor válido!"
+              getPriceChangeProduct product
 
 {-
 Get product description
@@ -157,13 +171,17 @@ getCodeChangeProduct = do
         changeProduct
         else if code == ":c"
           then changeProduct
-          else do
-            product <- getProductByCode (read code::Int)
-            if length product > 0
-              then getDescriptionChangeProduct (product!!0)
-              else do
-                putStr $ msgWarning "Produto não cadastrado"
-                changeProduct
+          else if ((code =~ "^[0-9]+$")::Bool)
+            then do
+              product <- getProductByCode (read code::Int)
+              if length product > 0
+                then getDescriptionChangeProduct (product!!0)
+                else do
+                  putStr $ msgWarning "Produto não cadastrado"
+                  changeProduct
+            else do
+              putStr $ msgDanger "Insira um valor inteiro válido!"
+              getCodeChangeProduct
 
 -- Function to add new product
 changeProduct :: IO ()
@@ -175,4 +193,9 @@ changeProduct = do
   putStrLn $ "\":l\" para listar os produtos"
   putStrLn $ "\":c\" para iniciar novamente"
   putStr $ borderLayout ++ colorDefault
-  getCodeChangeProduct
+  getCodeChangeProduct `catch` msgException
+
+msgException :: IOError -> IO ()
+msgException _ = do
+  putStr $ msgDanger "Entrada inválida!"
+  changeProduct
