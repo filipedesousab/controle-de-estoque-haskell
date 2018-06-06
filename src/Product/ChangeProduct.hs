@@ -21,7 +21,7 @@ confirmChangeProduct product = do
       result <- updateProduct product
       if result
         then putStr $ msgSuccess "Alteração realizada com sucesso ✔"
-        else putStr $ msgWarning "Houve alguma falha ao tentar alterar o produto!"
+        else putStr $ msgWarning "Produto não alterado!"
       putStrLn $ "Deseja realizar outra alteração? " ++ textRed "[s/n] "
       getConfirmYes changeProduct
     else changeProduct
