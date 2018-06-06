@@ -1,6 +1,8 @@
 module Product.RemoveProduct ( removeProduct ) where
 
 import System.IO (stdout, hSetBuffering, BufferMode(NoBuffering))
+import Text.Regex.Posix
+import Control.Exception
 
 import CustomColors
 import Layout
@@ -46,7 +48,11 @@ getCodeRemoveProduct = do
       then do
         listProducts
         removeProduct
-      else confirmRemoveProduct $ read code
+      else if ((code =~ "^[0-9]+$")::Bool)
+        then confirmRemoveProduct $ read code
+        else do
+          putStr $ msgDanger "Insira um valor inteiro válido!"
+          getCodeRemoveProduct
 
 -- Function to remove product
 removeProduct :: IO ()
@@ -57,4 +63,9 @@ removeProduct = do
   putStrLn $ "\":q\" para voltar ao menu principal"
   putStrLn $ "\":l\" para listar os produtos"
   putStr $ borderLayout ++ colorDefault
-  getCodeRemoveProduct
+  getCodeRemoveProduct `catch` msgException
+
+msgException :: IOError -> IO ()
+msgException _ = do
+  putStr $ msgDanger "Entrada inválida!"
+  removeProduct
