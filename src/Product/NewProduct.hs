@@ -1,6 +1,8 @@
 module Product.NewProduct ( newProduct ) where
 
 import System.IO (stdout, hSetBuffering, BufferMode(NoBuffering))
+import Text.Regex.Posix
+import Control.Exception
 
 import CustomColors
 import Layout
@@ -48,7 +50,11 @@ getTaxNewProduct x = do
         newProduct
         else if tax == ":c"
           then newProduct
-          else confirmNewProduct $ x ++ [tax]
+          else if ((tax =~ "^[0-9]+(.[0-9])*$")::Bool)
+            then confirmNewProduct $ x ++ [tax]
+            else do
+              putStr $ msgDanger "Insira um valor válido!"
+              getTaxNewProduct x
 
 {-
 Get product price
@@ -67,7 +73,11 @@ getPriceNewProduct x = do
         newProduct
         else if price == ":c"
           then newProduct
-          else getTaxNewProduct $ x ++ [price]
+          else if ((price =~ "^[0-9]+(.[0-9])*$")::Bool)
+            then getTaxNewProduct $ x ++ [price]
+            else do
+              putStr $ msgDanger "Insira um valor válido!"
+              getPriceNewProduct x
 
 {-
 Get product description
@@ -105,7 +115,11 @@ getCodeNewProduct = do
         newProduct
         else if code == ":c"
           then newProduct
-          else getDescriptionNewProduct [code]
+          else if ((code =~ "^[0-9]+$")::Bool)
+            then getDescriptionNewProduct [code]
+            else do
+              putStr $ msgDanger "Insira um valor inteiro válido!"
+              getCodeNewProduct
 
 -- Function to add new product
 newProduct :: IO ()
@@ -117,4 +131,9 @@ newProduct = do
   putStrLn $ "\":l\" para listar os produtos"
   putStrLn $ "\":c\" para iniciar novamente"
   putStr $ borderLayout ++ colorDefault
-  getCodeNewProduct
+  getCodeNewProduct `catch` msgException
+
+msgException :: IOError -> IO ()
+msgException _ = do
+  putStr $ msgDanger "Entrada inválida!"
+  newProduct
